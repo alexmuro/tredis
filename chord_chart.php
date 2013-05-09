@@ -97,11 +97,11 @@ Granularity
   <option value='0'>0</option>
   <option value='1'>1</option>
   <option value='2'>2</option>
-  <option value='3'>3</option>
+  <option value='3' selected>3</option>
   <option value='4'>4</option>
   <option value =" 5"> 5</option>
   <option value ="10">10</option>
-  <option value ="15" selected>15</option>
+  <option value ="15" >15</option>
   <option value ="20">20</option>
   <option value ="25">25</option>
   <option value ="30">30</option>
@@ -218,7 +218,7 @@ function chord_chart(data){
 }
 
   var url = 'data/get/getCountyFlow.php';
-  $.ajax({url:url, type:'POST',data: { sctg:'03',mode:"0",granularity:'15' },dataType:'json',async:true})
+  $.ajax({url:url, type:'POST',data: { sctg:'03',mode:"0",granularity:'3' },dataType:'json',async:true})
     .done(function(data) { 
       chord_chart(data);  
     })
