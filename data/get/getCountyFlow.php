@@ -6,11 +6,7 @@
 	include '../../config/db.php'; 
 	
 	$test = new db();
-	$mode_clause = '';
 	
-	if($mode != 0){
-		$mode_clase = "and mode = '$mode'";
-	} 	
 
 	$colors = ['#E41A1C','#FFFF33','#FF7F00','#999999','#984EA3','#377EB8','#4DAF4A','#F781BF'];
 	$inscon = $test->connect();

@@ -224,7 +224,7 @@ function chord_chart(data){
     .done(function(data) { 
       chord_chart(data);  
     })
-    .fail(function(data) { console.log(data) });
+    .fail(function(data) { console.log(data.responseText) });
   
   $(function(){
     $('select').on('change',function(){
@@ -238,7 +238,7 @@ function chord_chart(data){
 
           chord_chart(data);  
         })
-        .fail(function(data) { console.log(data) });
+        .fail(function(data) { console.log(data.responseText) });
     })
   })
 </script>
