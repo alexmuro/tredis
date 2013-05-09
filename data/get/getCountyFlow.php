@@ -1,8 +1,4 @@
 <?php
-	ini_set('display_errors','On');
- 	error_reporting(E_ALL);
-	//$geo_type = $_POST['geo_type'];
-	//$current_zone = $_POST['current_zone'];\
 	$commodity =$_POST['sctg'];
 	$mode = $_POST['mode'];
 	$granularity = $_POST['granularity'];
@@ -19,7 +15,7 @@
 	$colors = ['#E41A1C','#FFFF33','#FF7F00','#999999','#984EA3','#377EB8','#4DAF4A','#F781BF'];
 	$inscon = $test->connect();
 	$sql = "SELECT distinct orig_fips, sum(all_tons) as all_tons FROM MN_Flows where
-    orig_state = '27' and dest_state = '27' and sctg2 = '".$commodity."' $mode_clause group by orig_fips";
+    orig_state = '27' and dest_state = '27' and sctg2 = '".$commodity."' group by orig_fips";
 	$csv = [];
 	$matrix = [];
 	$i = 0;
@@ -33,14 +29,14 @@
 		$csv[] = $csvrow;
 		$i++;
 
-		 $sub_sql = "SELECT sum(all_tons) as all_tons FROM MN_Flows WHERE orig_fips = '".$row['orig_fips']."' and dest_state = '27' and sctg2 = '".$commodity."' $mode_clause group by dest_fips";
+		 $sub_sql = "SELECT sum(all_tons) as all_tons FROM MN_Flows WHERE orig_fips = '".$row['orig_fips']."' and dest_state = '27' and sctg2 = '".$commodity."' group by dest_fips";
 		
 		 $sub_rs = mysql_query($sub_sql) or die($sub_sql." ".mysql_error());
 		 $matrix_row = [];
 		while($sub_row = mysql_fetch_assoc( $sub_rs )){
-			//$matrix_row[] = $sub_row['all_tons'];
-		 	//echo $sub_row['all_tons'].',';
+
 		 	$trade = ($sub_row['all_tons'] / $row['all_tons']) * 100;
+
 		 	if($trade > $granularity){
 		 		$matrix_row[] = $trade;
 		 	}else{
@@ -48,7 +44,6 @@
 		 	}
 		 }
 		$matrix[] = $matrix_row;
-		//echo '<br>';
 	}
 	$data['matrix'] = $matrix;
 	$data['csv'] = $csv;
