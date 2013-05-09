@@ -20,25 +20,13 @@ class db {
   public function connect()
   {
     
-        $docroot = $_SERVER['DOCUMENT_ROOT'];
-        //echo "Docroot:$docroot";
-        // LIVE DB CONNECTION SETTINGS
-        //laptop Docroot = /var/www
-        if(strstr($docroot,'/usr/docs/dummy-host.example.com'))
-        //Mac Default Settings
-        {
-          $this->mysql_host = 'localhost';
-          $this->mysql_username = 'root';
-          $this->mysql_password = '';
-          $this->mysql_database = 'tredis';
-        }
-        else
-        {
+
+
           $this->mysql_host = 'localhost';
           $this->mysql_username = 'root';
           $this->mysql_password = 'am1238wk';
           $this->mysql_database = 'tredis';
-        }
+        
       $this->conn = mysql_connect($this->mysql_host, $this->mysql_username, $this->mysql_password)
        or die ("Could not connect: x " . mysql_error() ." ". $this->mysql_host);
     
