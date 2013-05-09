@@ -34,6 +34,7 @@ path.chord {
 <h1>MN County Flows <span id='heading_commidity'>03</span></h1>
 
 <aside>
+<p>
 Commodity:
 <select id='commodity_select'>
   <option value="01">01</option>
@@ -94,6 +95,10 @@ Mode:
 Granularity
 <select id='granularity_select'>>
   <option value='0'>0</option>
+  <option value='1'>1</option>
+  <option value='2'>2</option>
+  <option value='3'>3</option>
+  <option value='4'>4</option>
   <option value =" 5"> 5</option>
   <option value ="10">10</option>
   <option value ="15" selected>15</option>
@@ -107,7 +112,7 @@ Granularity
 <br>
 <p>The thickness of links be&shy;tween counties encodes the relative quantity of transport between two neighborhoods: thicker links represent more tons.
 
-<p>Links are directed: for exam&shy;ple, while 2.2% of rides go from South of Market to Downtown, only 1.2% go in the opposite direction. Links are colored by the more fre&shy;quent origin.
+<p>Links are directed. Links are colored by the greater tonnage origin.
 </aside>
 <div id="graph"></div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
