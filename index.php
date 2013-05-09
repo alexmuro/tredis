@@ -79,4 +79,3 @@ console.log(counties)
 d3.select(self.frameElement).style("height", height + "px");
 
 </script>
-<!-- April 10, 2013mbostock’s block #5349951 -->
