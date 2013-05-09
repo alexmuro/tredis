@@ -28,7 +28,7 @@
 		 $sub_sql = "SELECT sum(all_tons) as all_tons FROM MN_Flows WHERE orig_fips = '".$row['orig_fips']."' and dest_state = '27' and sctg2 = '".$commodity."' group by dest_fips";
 		
 		 $sub_rs = mysql_query($sub_sql) or die($sub_sql." ".mysql_error());
-		 $matrix_row = [];
+		 $matrix_row = array();
 		while($sub_row = mysql_fetch_assoc( $sub_rs )){
 
 		 	$trade = ($sub_row['all_tons'] / $row['all_tons']) * 100;
