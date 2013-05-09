@@ -6,13 +6,13 @@
 	include '../../config/db.php'; 
 	$test = new db();
 
-	$colors=array('#E41A1C','#FFFF33','#FF7F00','#999999','#984EA3','#377EB8','#4DAF4A','#F781BF');
+	$colors=array('#E41A1C','#FFFF33','#FF7F00','#999999','#984EA3','#377EB8','#4DAF4A','#F781BF';
 	$inscon = $test->connect();
 	$sql = "SELECT distinct orig_fips, sum(all_tons) as all_tons FROM MN_Flows where
     orig_state = '27' and dest_state = '27' and sctg2 = '".$commodity."' group by orig_fips";
 	
-	$csv = [];
-	$matrix = [];
+	$csv = array();
+	$matrix = array();
 	
 	$i = 0;
 	$rs=mysql_query($sql) or die($sql." ".mysql_error());
