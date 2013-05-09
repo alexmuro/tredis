@@ -156,8 +156,6 @@ function chord_chart(data){
 
   cities = data['csv'];
   matrix = data['matrix'];
-  console.log(cities);
-  console.log(matrix)
   // Compute the chord layout.
 
   layout.matrix(matrix);
