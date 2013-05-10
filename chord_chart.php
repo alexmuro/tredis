@@ -169,7 +169,7 @@ function chord_chart(data){
 
   // Add a mouseover title.
   group.append("title").text(function(d, i) {
-    return cities[i].name + ": " + formatPercent(d.value) + " of origins";
+    return cities[i].name + ": " + d.value.toFixed(2) + " origin tons.";
   });
 
   // Add the group arc.

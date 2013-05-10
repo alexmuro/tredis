@@ -47,7 +47,7 @@ var svg = d3.select("body").append("svg")
 
 d3.json("MN_Counties.topojson", function(error, oh) {
 var counties = topojson.feature(oh, oh.objects.counties);
-console.log(counties)
+
 
   projection
       .scale(1)
@@ -68,7 +68,7 @@ console.log(counties)
       .attr("class", "county")
       .attr("d", path)
     .append("title")
-      .text(function(d) { 'Countyx' });
+      .text(function(d) { d.name });
 
   svg.append("path")
       .datum(topojson.mesh(oh, oh.objects.counties, function(a, b) { return a !== b; }))
