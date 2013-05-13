@@ -112,8 +112,8 @@ Granularity
 <br>
 Origin or Destination
 <select id ='orig_or_dest'>
-  <option value="orig_fips">Origin</option>
-  <option value="dest_fips">Destination</option>
+  <option value="orig_fips">Origin Flows</option>
+  <option value="dest_fips">Destination Flows</option>
 </select>
 
 <br>
@@ -176,7 +176,7 @@ function chord_chart(data){
 
   // Add a mouseover title.
   group.append("title").text(function(d, i) {
-    return cities[i].name + ": " + parseFloat(cities[i].sum).toFixed(2) + " origin tons.";
+    return cities[i].name + ": " + parseFloat(cities[i].sum).toFixed(2) + " tons.";
   });
 
   // Add the group arc.
@@ -210,10 +210,10 @@ function chord_chart(data){
   chord.append("title").text(function(d) {
     return cities[d.source.index].name
         + " → " + cities[d.target.index].name
-        + ": " + formatPercent(d.source.value)
+        + ": " + d.source.value.toFixed(2)+"tns"
         + "\n" + cities[d.target.index].name
         + " → " + cities[d.source.index].name
-        + ": " + formatPercent(d.target.value);
+        + ": " + d.target.value.toFixed(2)+'tns';
   });
 
   function mouseover(d, i) {
@@ -224,7 +224,7 @@ function chord_chart(data){
   }
 }
 
-  var url = 'data/get/getCountyOrigFlow.php';
+  var url = 'data/get/getCountyFlow.php';
   $.ajax({url:url, type:'POST',data: { sctg:'03',mode:"0",granularity:'3',orig_or_dest:'orig_fips' },dataType:'json',async:true})
     .done(function(data) { 
       chord_chart(data);  
@@ -233,15 +233,15 @@ function chord_chart(data){
   
   $(function(){
     $('select').on('change',function(){
-      var url = 'data/get/getCountyOrigFlow.php';
+      var url = 'data/get/getCountyFlow.php';
       commodity = $("#commodity_select").val();
       mode = $("#mode_select").val();
       granularity = $("#granularity_select").val();
       orig_or_dest = $("#orig_or_dest").val();
       $('#heading_commidity').html(commodity);
-      $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,granularity:granularity},dataType:'json',async:true})
+      $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,granularity:granularity,orig_or_dest:orig_or_dest},dataType:'json',async:true})
         .done(function(data) { 
-
+          console.log($("#orig_or_dest").val())
           chord_chart(data);  
         })
         .fail(function(data) { console.log(data.responseText) });
