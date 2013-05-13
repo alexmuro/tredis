@@ -1,7 +1,11 @@
 <?php
+	error_reporting(E_ALL ^ E_NOTICE);
 	$commodity =$_POST['sctg'];
 	$mode = $_POST['mode'];
 	$granularity = $_POST['granularity'];
+	$granularity = $granularity/100;
+	$orig_or_dest = $_POST['orig_or_dest'];
+
 
 	include '../../config/db.php'; 
 	$test = new db();
@@ -14,24 +18,30 @@
 	$csv = array();
 	$matrix = array();
 	
+	$total = 0;
+	$rs=mysql_query($sql) or die($sql." ".mysql_error());
+	while($row = mysql_fetch_assoc( $rs )){
+		$total = ($total + $row['all_tons']);
+	}
+
 	$i = 0;
 	$rs=mysql_query($sql) or die($sql." ".mysql_error());
 	while($row = mysql_fetch_assoc( $rs )){
 
 		$csvrow['name'] = $row['orig_fips'];
 		$csvrow['sum'] = $row['all_tons'];
-		$index = number_format ( $i/13 );
+		$index = number_format ( $i/12 );
 		$csvrow['color'] = $colors[$index];
 		$csv[] = $csvrow;
 		$i++;
 
-		 $sub_sql = "SELECT sum(all_tons) as all_tons FROM MN_Flows WHERE orig_fips = '".$row['orig_fips']."' and dest_state = '27' and sctg2 = '".$commodity."' group by dest_fips";
+		 $sub_sql = "SELECT sum(all_tons) as all_tons FROM MN_Flows WHERE orig_fips = '".$row[$orig_or_dest]."' and dest_state = '27' and sctg2 = '".$commodity."' group by dest_fips";
 		
 		 $sub_rs = mysql_query($sub_sql) or die($sub_sql." ".mysql_error());
 		 $matrix_row = array();
 		while($sub_row = mysql_fetch_assoc( $sub_rs )){
 
-		 	$trade = ($sub_row['all_tons'] / $row['all_tons']) * 100;
+		 	$trade = ($sub_row['all_tons'] / $total) * 100;
 
 		 	if($trade > $granularity){
 		 		$matrix_row[] = $trade;
