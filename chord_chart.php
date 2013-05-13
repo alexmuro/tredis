@@ -110,6 +110,13 @@ Granularity
   <option value ="45">45</option>
 </select>
 <br>
+Origin or Destination
+<select id ='orig_or_dest'>
+  <option value="orig_fips">Origin</option>
+  <option value="dest_fips">Destination</option>
+</select>
+
+<br>
 <p>The thickness of links be&shy;tween counties encodes the relative quantity of transport between two neighborhoods: thicker links represent more tons.
 
 <p>Links are directed. Links are colored by the greater tonnage origin.
@@ -218,7 +225,7 @@ function chord_chart(data){
 }
 
   var url = 'data/get/getCountyFlow.php';
-  $.ajax({url:url, type:'POST',data: { sctg:'03',mode:"0",granularity:'3' },dataType:'json',async:true})
+  $.ajax({url:url, type:'POST',data: { sctg:'03',mode:"0",granularity:'3',orig_or_dest:'orig_fips' },dataType:'json',async:true})
     .done(function(data) { 
       chord_chart(data);  
     })
@@ -230,6 +237,7 @@ function chord_chart(data){
       commodity = $("#commodity_select").val();
       mode = $("#mode_select").val();
       granularity = $("#granularity_select").val();
+      orig_or_dest = $("#orig_or_dest").val();
       $('#heading_commidity').html(commodity);
       $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,granularity:granularity},dataType:'json',async:true})
         .done(function(data) { 
