@@ -45,10 +45,8 @@ circle {
     <div style="position:absolute;bottom:0;font-size:18px;">
       <input type="checkbox" id="voronoi"> <label for="voronoi">show Voronoi</label>
     </div>
-    <script type="text/javascript" src="d3/d3.js"></script>
-    <script type="text/javascript" src="d3/d3.csv.js"></script>
-    <script type="text/javascript" src="d3/d3.geo.js"></script>
-    <script type="text/javascript" src="d3/d3.geom.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="resources/js/d3.geo.js"></script>
     <script type="text/javascript">
 
 var w = 1280,
@@ -106,7 +104,7 @@ d3.csv("data/flights-airport.csv", function(flights) {
     countByAirport[destination] = (countByAirport[destination] || 0) + 1;
   });
 
-  d3.csv("airports.csv", function(airports) {
+  d3.csv("data/airports.csv", function(airports) {
 
     // Only consider airports with at least one flight.
     airports = airports.filter(function(airport) {
@@ -120,6 +118,7 @@ d3.csv("data/flights-airport.csv", function(flights) {
 
     // Compute the Voronoi diagram of airports' projected positions.
     var polygons = d3.geom.voronoi(positions);
+
 
     var g = cells.selectAll("g")
         .data(airports)

@@ -169,7 +169,7 @@ function chord_chart(data){
 
   // Add a mouseover title.
   group.append("title").text(function(d, i) {
-    return cities[i].name + ": " + d.value.toFixed(2) + " origin tons.";
+    return cities[i].name + ": " + parseFloat(cities[i].sum).toFixed(2) + " origin tons.";
   });
 
   // Add the group arc.
@@ -217,7 +217,7 @@ function chord_chart(data){
   }
 }
 
-  var url = 'data/get/getCountyFlow.php';
+  var url = 'data/get/getCountyOrigFlow.php';
   $.ajax({url:url, type:'POST',data: { sctg:'03',mode:"0",granularity:'3' },dataType:'json',async:true})
     .done(function(data) { 
       chord_chart(data);  
@@ -226,7 +226,7 @@ function chord_chart(data){
   
   $(function(){
     $('select').on('change',function(){
-      var url = 'data/get/getCountyFlow.php';
+      var url = 'data/get/getCountyOrigFlow.php';
       commodity = $("#commodity_select").val();
       mode = $("#mode_select").val();
       granularity = $("#granularity_select").val();
