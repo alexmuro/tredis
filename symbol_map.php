@@ -99,10 +99,11 @@ d3.csv("data/flights-airport.csv", function(flights) {
     var origin = flight.origin,
         destination = flight.destination,
         links = linksByOrigin[origin] || (linksByOrigin[origin] = []);
-    links.push({source: origin, target: destination});
-    countByAirport[origin] = (countByAirport[origin] || 0) + 1;
-    countByAirport[destination] = (countByAirport[destination] || 0) + 1;
+        links.push({source: origin, target: destination});
+        countByAirport[origin] = (countByAirport[origin] || 0) + 1;
+        countByAirport[destination] = (countByAirport[destination] || 0) + 1;
   });
+
 
   d3.csv("data/airports.csv", function(airports) {
 
@@ -115,10 +116,12 @@ d3.csv("data/flights-airport.csv", function(flights) {
         return true;
       }
     });
+    console.log(locationByAirport);
+    
+  
 
     // Compute the Voronoi diagram of airports' projected positions.
     var polygons = d3.geom.voronoi(positions);
-
 
     var g = cells.selectAll("g")
         .data(airports)

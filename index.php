@@ -28,20 +28,31 @@ index.html#
   pointer-events: none;
 }
 
+path.arc {
+  pointer-events: none;
+  fill: none;
+  stroke: #000;
+  display: none;
+}
+
 path.cell {
   fill: none;
   pointer-events: all;
 }
 
+circle {
+  fill: steelblue;
+  fill-opacity: .8;
+  stroke: #fff;
+}
+
 #cells.voronoi path.cell {
   stroke: brown;
-  z-index:1000;
 }
 
 #cells g:hover path.arc {
   display: inherit;
 }
-
 </style>
 <body>
 
@@ -153,37 +164,37 @@ function getCentroid(selection) {
 
 function symbol_graph(map,flow_data)
 {
-var width = 700,
-    height = 740,
-    positions = [],
-    hubs = [];
+  var width = 700,
+      height = 740,
+      positions = [],
+      hubs = [];
 
-var projection = d3.geo.conicConformal()
-    .parallels([39 + 26 / 60, 41 + 42 / 60])
-    .rotate([93 + 45 / 60, -40 - 20 / 60])
-    .translate([width / 2, height / 2]);
+  var projection = d3.geo.conicConformal()
+      .parallels([39 + 26 / 60, 41 + 42 / 60])
+      .rotate([93 + 45 / 60, -40 - 20 / 60])
+      .translate([width / 2, height / 2]);
 
-var path = d3.geo.path()
-    .projection(projection);
+  var path = d3.geo.path()
+      .projection(projection);
 
-var svg = d3.select("body").append("svg:svg")
-    .attr("width", width)
-    .attr("height", height);
-
-var states = svg.append("svg:g")
-    .attr("id", "states");
-
-var circles = svg.append("svg:g")
-    .attr("id", "circles");
-
-var cells = svg.append("svg:g")
-    .attr("id", "cells");
+  d3.select("body").selectAll("svg").remove();
 
 
+  var svg = d3.select("body").append("svg:svg")
+      .attr("width", width)
+      .attr("height", height);
+
+  var states = svg.append("svg:g")
+      .attr("id", "states");
+
+  var circles = svg.append("svg:g")
+      .attr("id", "circles");
+
+  var cells = svg.append("svg:g")
+      .attr("id", "cells");
 
   d3.json(map, function(error, oh) {
   var counties = topojson.feature(oh, oh.objects.counties);
-
 
   projection
       .scale(1)
@@ -210,76 +221,100 @@ var cells = svg.append("svg:g")
       .attr("class", "county-border")
       .attr("d", path);
 
-    svg.selectAll("path")
-      .each(function(d){
-        latlong = getCentroid(d3.select(this));
-        positions.push(latlong);
-        hub = {};
-        hub['id'] = d.id;
-        if(typeof d.properties != 'undefined'){
-          hub['name'] = d.properties.name;
-        }
-        hub['latitude'] = latlong[0];
-        hub['longitude'] = latlong[1];
-        hubs.push(hub);
-      });
-
-     var linksByOrigin = {},
+  var linksByOrigin = {},
       countByOrig = {},
       countByDest = {},
       locationByCounty = {};
-
+     
   var arc = d3.geo.greatArc()
       .source(function(d) { return locationByCounty[d.source]; })
       .target(function(d) { return locationByCounty[d.target]; });
+
+  svg.selectAll("path")
+    .each(function(d){
+      latlong = getCentroid(d3.select(this));
+      positions.push(latlong);
+      hub = {};
+      hub['id'] = d.id;
+      if(typeof d.properties != 'undefined'){
+        hub['name'] = d.properties.name;
+      }
+      hub['latitude'] = latlong[0];
+      hub['longitude'] = latlong[1];
+      locationByCounty[d.id] = latlong; 
+      hubs.push(hub);
+    });
+  console.log(locationByCounty);
+  console.log(positions);
 
   flow_data.forEach(function(flow) {
     var origin = flow.orig,
         destination = flow.dest,
         links = linksByOrigin[origin] || (linksByOrigin[origin] = []);
-    links.push({source: origin, target: destination});
-    countByOrig[origin] = (countByOrig[origin] || 0) + flow.tons*1;
-    countByDest[destination] = (countByDest[destination] || 0) + flow.tons*1;
+        links.push({source: origin, target: destination});
+        countByOrig[origin] = (countByOrig[origin] || 0) + flow.tons*1;
+        countByDest[destination] = (countByDest[destination] || 0) + flow.tons*1;
   });
-
-  console.log(countByOrig);
-
 
   var polygons = d3.geom.voronoi(positions);
 
-    var g = cells.selectAll("g")
-      .data(hubs)
+  var g = cells.selectAll("g")
+    .data(hubs)
     .enter().append("svg:g");
 
-    g.append("svg:path")
-        .attr("class", "cell")
-        .attr("d", function(d, i) { return "M" + polygons[i].join("L") + "Z"; })
-        .on("mouseover", function(d, i) { d3.select("h2 span").text(d.name); });
+  g.append("svg:path")
+    .attr("class", "cell")
+    .attr("d", function(d, i) { return "M" + polygons[i].join("L") + "Z"; })
+    .on("mouseover", function(d, i) { d3.select("h2 span").text(d.name); });
 
-    circles.selectAll("circle")
-        .data(hubs)
-      .enter().append("svg:circle")
-        .attr("cx", function(d, i) { return positions[i][0]; })
-        .attr("cy", function(d, i) { return positions[i][1]; })
-        .attr("r", function(d, i) { return Math.sqrt(countByOrig[d.id+""]/7) || 1; });
-        
-     
+  g.selectAll("path.arc")
+    .data(function(d) { 
+        if(typeof d.id != 'undefined'){
+          return linksByOrigin[d.id] || [];
+        }
+        else{ return [];} 
+      })
+    .enter().append("svg:path")
+      .attr("class", "arc")
+      .attr("d", function(d) { return path(arc(d)); });
 
+  circles.selectAll("circle")
+      .data(hubs)
+    .enter().append("svg:circle")
+      .attr("cx", function(d, i) { return positions[i][0]; })
+      .attr("cy", function(d, i) { return positions[i][1]; })
+      .attr("r", function(d, i) { return Math.sqrt(countByOrig[d.id]/7) || 1; })
+      .sort(function(a, b) { return countByOrig[b.id] - countByOrig[a.id]; });
+      
     d3.select("input[type=checkbox]").on("change", function() {
      cells.classed("voronoi", this.checked);
     });
 
 });
 
-d3.select(self.frameElement).style("height", height + "px");
 }
 
 var url = 'data/get/getCountyOrigDestFlow.php';
   $.ajax({url:url, type:'POST',data: { sctg:'03',mode:"0",granularity:'3' },dataType:'json',async:true})
     .done(function(data) { 
-      console.log(data);
       symbol_graph("MN_Counties.topojson",data);  
     })
     .fail(function(data) { console.log(data.responseText) });
+
+$(function(){
+    $('select').on('change',function(){
+      var url = 'data/get/getCountyOrigDestFlow.php';
+      commodity = $("#commodity_select").val();
+      mode = $("#mode_select").val();
+      granularity = $("#granularity_select").val();
+      $('#heading_commidity').html(commodity);
+      $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,granularity:granularity},dataType:'json',async:true})
+        .done(function(data) { 
+          symbol_graph("MN_Counties.topojson",data);  
+        })
+        .fail(function(data) { console.log(data.responseText) });
+    })
+  })
+
 
 </script>
