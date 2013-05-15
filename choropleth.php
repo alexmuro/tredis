@@ -162,7 +162,7 @@ queue()
     .await(ready);
 
   function ready(error, us) {
-    console.log(error);
+    //console.log(error);
     svg.append("g")
       .attr("class", "counties")
     .selectAll("path")
@@ -181,7 +181,7 @@ queue()
   var url = 'data/get/getCountyToNation.php';
   $.ajax({url:url, type:'POST',data: { sctg:'19',mode:"0",granularity:'3',orig_or_dest:'orig_fips' },dataType:'json',async:true})
     .done(function(data) { 
-      console.log(data);
+      //console.log(data);
       choropleth(data);  
     })
     .fail(function(data) { console.log(data.responseText) });
