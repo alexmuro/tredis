@@ -34,23 +34,27 @@
 
 <header>
   <a href="availabs.org" rel="author">AVAIL Labs Tredis Demo</a>
-  <aside>May 9, 2013</aside>
+  <aside>May 16, 2013</aside>
 </header>
 
 <h1>MN County Flows <span id='heading_commidity'>03</span></h1>
 
 <aside style="margin-top:300px;"> 
 <p>
+Selected County
+<select id='county_select'>
+</select><br>
 Commodity:
 <select id='commodity_select'>
-  <option value="27">27</option>
-<option value="19">19</option>
-<option value="12" selected>12</option>
-<option value="34">34</option>
-<option value="18">18</option>
-<option value="20">20</option>
-<option value="7">7</option>
-<option value="2">2</option>
+<option value="00" selected>All Commodities</option>
+<option value="01">01</option>
+<option value="02">02</option>
+<option value="03" >03</option>
+<option value="04">04</option>
+<option value="05">05</option>
+<option value="06">06</option>
+<option value="07">07</option>
+<option value="08">08</option>
 <option value="10">10</option>
 <option value="11">11</option>
 <option value="12">12</option>
@@ -98,43 +102,26 @@ Mode:
   <option value="7">7</option>
 </select>
 <br>
-Granularity
-<select id='granularity_select'>>
-  <option value='0'>0</option>
-  <option value='1'>1</option>
-  <option value='2'>2</option>
-  <option value='3' selected>3</option>
-  <option value='4'>4</option>
-  <option value =" 5"> 5</option>
-  <option value ="10">10</option>
-  <option value ="15" >15</option>
-  <option value ="20">20</option>
-  <option value ="25">25</option>
-  <option value ="30">30</option>
-  <option value ="35">35</option>
-  <option value ="40">40</option>
-  <option value ="45">45</option>
-</select>
-<br>
 Origin or Destination
 <select id ='orig_or_dest'>
-  <option value="orig_fips">Origin Flows</option>
-  <option value="dest_fips">Destination Flows</option>
+  <option value="orig_fips">Outgoing Flows</option>
+  <option value="dest_fips">Incoming Flows</option>
 </select>
 
-<br>
-<p>Duluth Flows.</p>
+
+
+
 </aside>
 <div id="graph"></div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://d3js.org/queue.v1.min.js"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="resources/js/d3.v3.min.js"></script>
+<script src="resources/js/queue.v1.min.js"></script>
+<script src="resources/js/topojson.v1.min.js"></script>
 
 <script>
 
 
-function choropleth(data){
+function choropleth(data,fips){
 
  var width = 860,
     height = 500;
@@ -154,7 +141,7 @@ var svg = d3.select("body").append("svg")
     .attr("height", height);
 
 data.forEach(function(d) { 
-  rateById.set(d.orig, +d.tons*1000);
+  rateById.set((d.orig)*1, +d.tons*1000);
 })
 
 queue()
@@ -168,7 +155,7 @@ queue()
     .selectAll("path")
       .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
-      .attr("class", function(d) { if(d.id == 27137){ return 'selected';}else{return quantize(rateById.get(d.id)) || 'none';} })
+      .attr("class", function(d) { if(d.id == fips){ return 'selected';}else{return quantize(rateById.get(d.id)) || 'none';} })
       .attr("d", path);
 
     svg.append("path")
@@ -178,11 +165,31 @@ queue()
   }
 }
 
+  // function createDB(fips){
+  //   var url = 'data/create/createCountyTable.php';
+  //   $.ajax({url:url, type:'POST',data: { fips:fips },dataType:'json',async:false})
+  //   .done(function(data) { 
+  //     console.log(data);
+  //   })
+  //   .fail(function(data) { console.log(data.responseText) });
+  // }
+
+  d3.json('MN_Counties.topojson', function(error, oh) {
+    var counties = topojson.feature(oh, oh.objects.counties);
+    counties.features.forEach(function(d){
+      $('#county_select')
+         .append($("<option></option>")
+         .attr("value",d.id)
+         .text(d.properties.name+"-"+d.id)); 
+    });
+    $('#county_select').val(27137);
+  });
+
+
   var url = 'data/get/getCountyToNation.php';
-  $.ajax({url:url, type:'POST',data: { sctg:'19',mode:"0",granularity:'3',orig_or_dest:'orig_fips' },dataType:'json',async:true})
+  $.ajax({url:url, type:'POST',data: { sctg:'00',mode:"00",orig_or_dest:'orig_fips',fips:27137 },dataType:'json',async:true})
     .done(function(data) { 
-      //console.log(data);
-      choropleth(data);  
+      choropleth(data,27137);  
     })
     .fail(function(data) { console.log(data.responseText) });
   
@@ -193,10 +200,11 @@ queue()
       mode = $("#mode_select").val();
       granularity = $("#granularity_select").val();
       orig_or_dest = $("#orig_or_dest").val();
+      fips = $('#county_select').val();
       $('#heading_commidity').html(commodity);
-      $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,granularity:granularity,orig_or_dest:orig_or_dest},dataType:'json',async:true})
+      $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,orig_or_dest:orig_or_dest,fips:fips},dataType:'json',async:true})
         .done(function(data) { 
-          choropleth(data);  
+          choropleth(data,fips);  
         })
         .fail(function(data) { console.log(data.responseText) });
     })

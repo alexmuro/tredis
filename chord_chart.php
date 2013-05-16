@@ -37,7 +37,8 @@ path.chord {
 <p>
 Commodity:
 <select id='commodity_select'>
-  <option value="01">01</option>
+<option value="00">All Commodities</option>
+<option value="01">01</option>
 <option value="02">02</option>
 <option value="03" selected>03</option>
 <option value="04">04</option>
@@ -112,8 +113,8 @@ Granularity
 <br>
 Origin or Destination
 <select id ='orig_or_dest'>
-  <option value="orig_fips">Origin Flows</option>
-  <option value="dest_fips">Destination Flows</option>
+  <option value="orig_fips">Outgoing Flows</option>
+  <option value="dest_fips">Incoming Flows</option>
 </select>
 
 <br>
@@ -123,7 +124,8 @@ Origin or Destination
 </aside>
 <div id="graph"></div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-<script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
+<script src="resources/js/d3.v3.min.js"></script>
+
 <script>
 
 
@@ -241,7 +243,7 @@ function chord_chart(data){
       $('#heading_commidity').html(commodity);
       $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,granularity:granularity,orig_or_dest:orig_or_dest},dataType:'json',async:true})
         .done(function(data) { 
-          console.log($("#orig_or_dest").val())
+          
           chord_chart(data);  
         })
         .fail(function(data) { console.log(data.responseText) });

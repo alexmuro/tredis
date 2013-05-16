@@ -1,12 +1,31 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <link type="text/css" rel="stylesheet" href="resources/css/symbol_map.css"/>
-    <style type="text/css">
+<!-- mbostock’s block #5349951
+Ohio State Plane (N)
+April 10, 2013
+Open in a new window.
+The counties of Ohio, generated via the us-atlas and using the Ohio State Plane North projection, part of the State Plane Coordinate System.
 
-#states path {
-  fill: #ccc;
-  stroke: #fff;
+index.html#
+ -->
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+
+<style>
+@import url(resources/css/chord_chart.css);
+
+.county {
+  fill: #eee;
+  z-index:-1;
+}
+
+.county:hover {
+  fill: orange;
+}
+
+.county-border {
+  fill: none;
+  stroke: #777;
+  pointer-events: none;
 }
 
 path.arc {
@@ -34,120 +53,257 @@ circle {
 #cells g:hover path.arc {
   display: inherit;
 }
+</style>
+<body>
 
-    </style>
-  </head>
-  <body>
-    <h2>
-      <span>U.S. commercial airports</span>, 2008<br>
-      great arcs and symbol map
+</style>
+
+<header>
+  <aside>May 16, 2013</aside>
+</header>
+
+<h1>MN County Flows <span id='heading_commidity'>03</span></h1>
+
+<aside>
+
+<p>
+Commodity:
+<select id='commodity_select'>
+  <option value="01">01</option>
+<option value="02">02</option>
+<option value="03" selected>03</option>
+<option value="04">04</option>
+<option value="05">05</option>
+<option value="06">06</option>
+<option value="07">07</option>
+<option value="08">08</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12">12</option>
+<option value="13">13</option>
+<option value="14">14</option>
+<option value="15">15</option>
+<option value="16">16</option>
+<option value="17">17</option>
+<option value="18">18</option>
+<option value="19">19</option>
+<option value="20">20</option>
+<option value="21">21</option>
+<option value="22">22</option>
+<option value="23">23</option>
+<option value="24">24</option>
+<option value="25">25</option>
+<option value="26">26</option>
+<option value="27">27</option>
+<option value="28">28</option>
+<option value="29">29</option>
+<option value="30">30</option>
+<option value="31">31</option>
+<option value="32">32</option>
+<option value="33">33</option>
+<option value="34">34</option>
+<option value="35">35</option>
+<option value="36">36</option>
+<option value="37">37</option>
+<option value="38">38</option>
+<option value="39">39</option>
+<option value="40">40</option>
+<option value="41">41</option>
+<option value="43">43</option>
+<option value="99">99</option>
+</select>
+<br>
+Mode:
+<select id='mode_select'>
+  <option value='00'>All Modes</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+</select> <br>
+Origin or Destination
+<select id ='orig_or_dest'>
+  <option value="orig_fips">Outgoing Flows</option>
+  <option value="dest_fips">Incoming Flows</option>
+</select>
+<br>
+<input type="checkbox" id="voronoi"> <label for="voronoi">show Voronoi</label>
+
+
+ <h2>
+      <span>Minnesota Counties</span>
     </h2>
-    <div style="position:absolute;bottom:0;font-size:18px;">
-      <input type="checkbox" id="voronoi"> <label for="voronoi">show Voronoi</label>
-    </div>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="resources/js/d3.geo.js"></script>
-    <script type="text/javascript">
+</aside>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script src="resources/js/d3.v3.min.js"></script>
+<script src="resources/js/topojson.v1.min.js"></script>
+<script>
+function getCentroid(selection) {
+    // get the DOM element from a D3 selection
+    // you could also use "this" inside .each()
+    var element = selection.node(),
+        // use the native SVG interface to get the bounding box
+        bbox = element.getBBox();
+    // return the center of the bounding box
+    return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
+}
 
-var w = 1280,
-    h = 800;
+function symbol_graph(map,flow_data,orig_or_dest)
+{
+  var width = 700,
+      height = 740,
+      positions = [],
+      hubs = [];
 
-var projection = d3.geo.azimuthal()
-    .mode("equidistant")
-    .origin([-98, 38])
-    .scale(1400)
-    .translate([640, 360]);
+  var projection = d3.geo.conicConformal()
+      .parallels([39 + 26 / 60, 41 + 42 / 60])
+      .rotate([93 + 45 / 60, -40 - 20 / 60])
+      .translate([width / 2, height / 2]);
 
-var path = d3.geo.path()
-    .projection(projection);
+  var path = d3.geo.path()
+      .projection(projection);
 
-var svg = d3.select("body").insert("svg:svg", "h2")
-    .attr("width", w)
-    .attr("height", h);
+  d3.select("body").selectAll("svg").remove();
 
-var states = svg.append("svg:g")
-    .attr("id", "states");
 
-var circles = svg.append("svg:g")
-    .attr("id", "circles");
+  var svg = d3.select("body").append("svg:svg")
+      .attr("width", width)
+      .attr("height", height);
 
-var cells = svg.append("svg:g")
-    .attr("id", "cells");
+  var states = svg.append("svg:g")
+      .attr("id", "states");
 
-d3.select("input[type=checkbox]").on("change", function() {
-  cells.classed("voronoi", this.checked);
-});
+  var circles = svg.append("svg:g")
+      .attr("id", "circles");
 
-d3.json("data/us-states.json", function(collection) {
+  var cells = svg.append("svg:g")
+      .attr("id", "cells");
+
+  d3.json(map, function(error, oh) {
+  var counties = topojson.feature(oh, oh.objects.counties);
+
+  projection
+      .scale(1)
+      .translate([0, 0]);
+
+  var b = path.bounds(counties),
+      s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+      t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+
+  projection
+      .scale(s)
+      .translate(t);
+
   states.selectAll("path")
-      .data(collection.features)
+      .data(counties.features)
     .enter().append("svg:path")
+      .attr("class", "county")
+      .attr("d", path)
+    .append("title")
+      .text(function(d) { d.name });
+
+  svg.append("path")
+      .datum(topojson.mesh(oh, oh.objects.counties, function(a, b) { return a !== b; }))
+      .attr("class", "county-border")
       .attr("d", path);
-});
 
-d3.csv("data/flights-airport.csv", function(flights) {
   var linksByOrigin = {},
-      countByAirport = {},
-      locationByAirport = {},
-      positions = [];
-
+      countByOrig = {},
+      countByDest = {},
+      locationByCounty = {};
+     
   var arc = d3.geo.greatArc()
-      .source(function(d) { return locationByAirport[d.source]; })
-      .target(function(d) { return locationByAirport[d.target]; });
+      .source(function(d) { return locationByCounty[d.source]; })
+      .target(function(d) { return locationByCounty[d.target]; });
 
-  flights.forEach(function(flight) {
-    var origin = flight.origin,
-        destination = flight.destination,
+  svg.selectAll("path")
+    .each(function(d){
+      latlong = getCentroid(d3.select(this));
+      positions.push(latlong);
+      hub = {};
+      hub['id'] = d.id;
+      if(typeof d.properties != 'undefined'){
+        hub['name'] = d.properties.name;
+      }
+      hub['latitude'] = latlong[0];
+      hub['longitude'] = latlong[1];
+      locationByCounty[d.id] = latlong; 
+      hubs.push(hub);
+    });
+  console.log(locationByCounty);
+  console.log(positions);
+
+  flow_data.forEach(function(flow) {
+    var origin = flow.orig,
+        destination = flow.dest,
         links = linksByOrigin[origin] || (linksByOrigin[origin] = []);
         links.push({source: origin, target: destination});
-        countByAirport[origin] = (countByAirport[origin] || 0) + 1;
-        countByAirport[destination] = (countByAirport[destination] || 0) + 1;
+        countByOrig[origin] = (countByOrig[origin] || 0) + flow.tons*1;
+        countByDest[destination] = (countByDest[destination] || 0) + flow.tons*1;
   });
 
+  var polygons = d3.geom.voronoi(positions);
 
-  d3.csv("data/airports.csv", function(airports) {
+  var g = cells.selectAll("g")
+    .data(hubs)
+    .enter().append("svg:g");
 
-    // Only consider airports with at least one flight.
-    airports = airports.filter(function(airport) {
-      if (countByAirport[airport.iata]) {
-        var location = [+airport.longitude, +airport.latitude];
-        locationByAirport[airport.iata] = location;
-        positions.push(projection(location));
-        return true;
-      }
+  g.append("svg:path")
+    .attr("class", "cell")
+    .attr("d", function(d, i) { return "M" + polygons[i].join("L") + "Z"; })
+    .on("mouseover", function(d, i) { d3.select("h2 span").text(d.name); });
+
+  // g.selectAll("path.arc")
+  //   .data(function(d) { 
+  //       if(typeof d.id != 'undefined'){
+  //         return linksByOrigin[d.id] || [];
+  //       }
+  //       else{ return [];} 
+  //     })
+  //   .enter().append("svg:path")
+  //     .attr("class", "arc")
+  //     .attr("d", function(d) { return path(arc(d)); });
+
+  circles.selectAll("circle")
+      .data(hubs)
+    .enter().append("svg:circle")
+      .attr("cx", function(d, i) { return positions[i][0]; })
+      .attr("cy", function(d, i) { return positions[i][1]; })
+      .attr("r", function(d, i) { if(orig_or_dest == 'orig_fips'){return Math.sqrt(countByOrig[d.id]/7) || 1; }else{ return Math.sqrt(countByDest[d.id]/7) || 1;} })
+      .sort(function(a, b) { return countByOrig[b.id] - countByOrig[a.id]; });
+      
+    d3.select("input[type=checkbox]").on("change", function() {
+     cells.classed("voronoi", this.checked);
     });
-    console.log(locationByAirport);
-    
-  
 
-    // Compute the Voronoi diagram of airports' projected positions.
-    var polygons = d3.geom.voronoi(positions);
-
-    var g = cells.selectAll("g")
-        .data(airports)
-      .enter().append("svg:g");
-
-    g.append("svg:path")
-        .attr("class", "cell")
-        .attr("d", function(d, i) { return "M" + polygons[i].join("L") + "Z"; })
-        .on("mouseover", function(d, i) { d3.select("h2 span").text(d.name); });
-
-    g.selectAll("path.arc")
-        .data(function(d) { return linksByOrigin[d.iata] || []; })
-      .enter().append("svg:path")
-        .attr("class", "arc")
-        .attr("d", function(d) { return path(arc(d)); });
-
-    circles.selectAll("circle")
-        .data(airports)
-      .enter().append("svg:circle")
-        .attr("cx", function(d, i) { return positions[i][0]; })
-        .attr("cy", function(d, i) { return positions[i][1]; })
-        .attr("r", function(d, i) { return Math.sqrt(countByAirport[d.iata]); })
-        .sort(function(a, b) { return countByAirport[b.iata] - countByAirport[a.iata]; });
-  });
 });
 
-    </script>
-  </body>
-</html>
+}
+
+var url = 'data/get/getCountyOrigDestFlow.php';
+  $.ajax({url:url, type:'POST',data: { sctg:'03',mode:"00",granularity:'3',orig_or_dest:'orig_fips' },dataType:'json',async:true})
+    .done(function(data) { 
+      symbol_graph("MN_Counties.topojson",data,'orig_fips');  
+    })
+    .fail(function(data) { console.log(data.responseText) });
+
+$(function(){
+    $('select').on('change',function(){
+      var url = 'data/get/getCountyOrigDestFlow.php';
+      commodity = $("#commodity_select").val();
+      mode = $("#mode_select").val();
+      granularity = $("#granularity_select").val();
+      orig_or_dest = $("#orig_or_dest").val();
+      $('#heading_commidity').html(commodity);
+      $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,granularity:granularity,orig_or_dest:orig_or_dest },dataType:'json',async:true})
+        .done(function(data) { 
+          symbol_graph("MN_Counties.topojson",data,orig_or_dest);  
+        })
+        .fail(function(data) { console.log(data.responseText) });
+    })
+  })
+
+
+</script>
