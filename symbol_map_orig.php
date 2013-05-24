@@ -116,7 +116,7 @@ d3.csv("data/flights-airport.csv", function(flights) {
         return true;
       }
     });
-    console.log(locationByAirport);
+    console.log(positions);
     
   
 
@@ -136,7 +136,10 @@ d3.csv("data/flights-airport.csv", function(flights) {
         .data(function(d) { return linksByOrigin[d.iata] || []; })
       .enter().append("svg:path")
         .attr("class", "arc")
-        .attr("d", function(d) { return path(arc(d)); });
+        .attr("d", function(d) { 
+          console.log(arc(d));
+          console.log(path(arc(d)));
+          return path(arc(d)); });
 
     circles.selectAll("circle")
         .data(airports)

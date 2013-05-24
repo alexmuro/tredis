@@ -69,59 +69,61 @@ circle {
 <p>
 Commodity:
 <select id='commodity_select'>
-  <option value="01">01</option>
-<option value="02">02</option>
-<option value="03" selected>03</option>
-<option value="04">04</option>
-<option value="05">05</option>
-<option value="06">06</option>
-<option value="07">07</option>
-<option value="08">08</option>
-<option value="10">10</option>
-<option value="11">11</option>
-<option value="12">12</option>
-<option value="13">13</option>
-<option value="14">14</option>
-<option value="15">15</option>
-<option value="16">16</option>
-<option value="17">17</option>
-<option value="18">18</option>
-<option value="19">19</option>
-<option value="20">20</option>
-<option value="21">21</option>
-<option value="22">22</option>
-<option value="23">23</option>
-<option value="24">24</option>
-<option value="25">25</option>
-<option value="26">26</option>
-<option value="27">27</option>
-<option value="28">28</option>
-<option value="29">29</option>
-<option value="30">30</option>
-<option value="31">31</option>
-<option value="32">32</option>
-<option value="33">33</option>
-<option value="34">34</option>
-<option value="35">35</option>
-<option value="36">36</option>
-<option value="37">37</option>
-<option value="38">38</option>
-<option value="39">39</option>
-<option value="40">40</option>
-<option value="41">41</option>
-<option value="43">43</option>
-<option value="99">99</option>
+  <option value="00" selected>All Commodities</option>
+<option value="01">Live animals/fish</option>
+<option value="02">Cereal grains</option>
+<option value="03">Other ag prods.</option>
+<option value="04">Animal feed</option>
+<option value="05">Meat/seafood</option>
+<option value="06">Milled grain prods.</option>
+<option value="07">Other foodstuffs</option>
+<option value="08">Alcoholic beverages</option>
+<option value="09">Tobacco prods.</option>
+<option value="10">Building stone</option>
+<option value="11">Natural sands</option>
+<option value="12">Gravel</option>
+<option value="13">Nonmetallic minerals</option>
+<option value="14">Metallic ores</option>
+<option value="15">Coal</option>
+<option value="16">Crude petroleum</option>
+<option value="18">Gasoline</option>
+<option value="19">Fuel oils</option>
+<option value="20">Basic chemicals</option>
+<option value="21">Pharmaceuticals</option>
+<option value="22">Fertilizers</option>
+<option value="23">Chemical prods.</option>
+<option value="24">Plastics/rubber</option>
+<option value="25">Logs</option>
+<option value="26">Wood prods.</option>
+<option value="27">Newsprint/paper</option>
+<option value="28">Paper articles</option>
+<option value="29">Printed prods.</option>
+<option value="30">Textiles/leather</option>
+<option value="31">Nonmetal min. prods.</option>
+<option value="32">Base metals</option>
+<option value="33">Articles-base metal</option>
+<option value="34">Machinery</option>
+<option value="35">Electronics</option>
+<option value="36">Motorized vehicles</option>
+<option value="37">Transport equip.</option>
+<option value="38">Precision instruments</option>
+<option value="39">Furniture</option>
+<option value="40">Misc. mfg. prods.</option>
+<option value="41">Waste/scrap</option>
+<option value="43">Mixed freight</option>
+<option value="99">Unknown</option>
 </select>
 <br>
 Mode:
 <select id='mode_select'>
   <option value='00'>All Modes</option>
-  <option value="1">1</option>
-  <option value="2">2</option>
-  <option value="3">3</option>
-  <option value="5">5</option>
-  <option value="6">6</option>
-  <option value="7">7</option>
+ <option value='00'>All Modes</option>
+  <option value="1">Truck</option>
+  <option value="2">Rail</option>
+  <option value="3">Water</option>
+  <option value="5">Air</option>
+  <option value="6">Pipeline</option>
+  <option value="7">Other/Unkown</option>
 </select> <br>
 Origin or Destination
 <select id ='orig_or_dest'>
@@ -129,9 +131,25 @@ Origin or Destination
   <option value="dest_fips">Incoming Flows</option>
 </select>
 <br>
+Granularity
+<select id='granularity_select'>>
+  <option value='0'>0</option>
+  <option value='1'>1</option>
+  <option value='2'>2</option>
+  <option value='3' selected>3</option>
+  <option value='4'>4</option>
+  <option value =" 5"> 5</option>
+  <option value ="10">10</option>
+  <option value ="15" >15</option>
+  <option value ="20">20</option>
+  <option value ="25">25</option>
+  <option value ="30">30</option>
+  <option value ="35">35</option>
+  <option value ="40">40</option>
+  <option value ="45">45</option>
+</select>
+<br>
 <input type="checkbox" id="voronoi"> <label for="voronoi">show Voronoi</label>
-
-
  <h2>
       <span>Minnesota Counties</span>
     </h2>
@@ -232,18 +250,24 @@ function symbol_graph(map,flow_data,orig_or_dest)
       locationByCounty[d.id] = latlong; 
       hubs.push(hub);
     });
-  console.log(locationByCounty);
-  console.log(positions);
-
+ 
+  var maxFlow = 0;
   flow_data.forEach(function(flow) {
-    var origin = flow.orig,
+    if(flow.tons > maxFlow){
+      maxFlow = flow.tons;
+    }
+    if(flow.tons > $("#granularity_select").val()){
+    
+        var origin = flow.orig,
         destination = flow.dest,
         links = linksByOrigin[origin] || (linksByOrigin[origin] = []);
         links.push({source: origin, target: destination});
         countByOrig[origin] = (countByOrig[origin] || 0) + flow.tons*1;
         countByDest[destination] = (countByDest[destination] || 0) + flow.tons*1;
+      }
   });
 
+  //console.log('maxflow:'+maxFlow);
   var polygons = d3.geom.voronoi(positions);
 
   var g = cells.selectAll("g")
@@ -255,23 +279,31 @@ function symbol_graph(map,flow_data,orig_or_dest)
     .attr("d", function(d, i) { return "M" + polygons[i].join("L") + "Z"; })
     .on("mouseover", function(d, i) { d3.select("h2 span").text(d.name); });
 
-  // g.selectAll("path.arc")
-  //   .data(function(d) { 
-  //       if(typeof d.id != 'undefined'){
-  //         return linksByOrigin[d.id] || [];
-  //       }
-  //       else{ return [];} 
-  //     })
-  //   .enter().append("svg:path")
-  //     .attr("class", "arc")
-  //     .attr("d", function(d) { return path(arc(d)); });
+  g.selectAll("path.arc")
+    .data(function(d) { 
+        if(typeof d.id != 'undefined'){
+          return linksByOrigin[d.id] || [];
+        }
+        else{ return [];} 
+      })
+    .enter().append("svg:path")
+      .attr("class", "arc")
+      .attr("d", function(d) { 
+      path = d3.geo.path()
+      .projection(null);
+        return path(arc(d)); });
+
+ divisor = 6;
+ if(maxFlow/15  > divisor){
+    divisor = maxFlow/15;
+ }
 
   circles.selectAll("circle")
       .data(hubs)
     .enter().append("svg:circle")
       .attr("cx", function(d, i) { return positions[i][0]; })
       .attr("cy", function(d, i) { return positions[i][1]; })
-      .attr("r", function(d, i) { if(orig_or_dest == 'orig_fips'){return Math.sqrt(countByOrig[d.id]/7) || 1; }else{ return Math.sqrt(countByDest[d.id]/7) || 1;} })
+      .attr("r", function(d, i) { if(orig_or_dest == 'orig_fips'){return Math.sqrt(countByOrig[d.id]/divisor) || 1; }else{ return Math.sqrt(countByDest[d.id]/7) || 1;} })
       .sort(function(a, b) { return countByOrig[b.id] - countByOrig[a.id]; });
       
     d3.select("input[type=checkbox]").on("change", function() {
@@ -283,8 +315,9 @@ function symbol_graph(map,flow_data,orig_or_dest)
 }
 
 var url = 'data/get/getCountyOrigDestFlow.php';
-  $.ajax({url:url, type:'POST',data: { sctg:'03',mode:"00",granularity:'3',orig_or_dest:'orig_fips' },dataType:'json',async:true})
+  $.ajax({url:url, type:'POST',data: { sctg:'00',mode:"00",granularity:'3',orig_or_dest:'orig_fips' },dataType:'json',async:true})
     .done(function(data) { 
+       $('#heading_commidity').html($("#commodity_select").find(":selected").text());
       symbol_graph("MN_Counties.topojson",data,'orig_fips');  
     })
     .fail(function(data) { console.log(data.responseText) });
@@ -296,7 +329,7 @@ $(function(){
       mode = $("#mode_select").val();
       granularity = $("#granularity_select").val();
       orig_or_dest = $("#orig_or_dest").val();
-      $('#heading_commidity').html(commodity);
+      $('#heading_commidity').html($("#commodity_select").find(":selected").text());
       $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,granularity:granularity,orig_or_dest:orig_or_dest },dataType:'json',async:true})
         .done(function(data) { 
           symbol_graph("MN_Counties.topojson",data,orig_or_dest);  

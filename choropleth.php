@@ -47,59 +47,58 @@ Selected County
 Commodity:
 <select id='commodity_select'>
 <option value="00" selected>All Commodities</option>
-<option value="01">01</option>
-<option value="02">02</option>
-<option value="03" >03</option>
-<option value="04">04</option>
-<option value="05">05</option>
-<option value="06">06</option>
-<option value="07">07</option>
-<option value="08">08</option>
-<option value="10">10</option>
-<option value="11">11</option>
-<option value="12">12</option>
-<option value="13">13</option>
-<option value="14">14</option>
-<option value="15">15</option>
-<option value="16">16</option>
-<option value="17">17</option>
-<option value="18">18</option>
-<option value="19">19</option>
-<option value="20">20</option>
-<option value="21">21</option>
-<option value="22">22</option>
-<option value="23">23</option>
-<option value="24">24</option>
-<option value="25">25</option>
-<option value="26">26</option>
-<option value="27">27</option>
-<option value="28">28</option>
-<option value="29">29</option>
-<option value="30">30</option>
-<option value="31">31</option>
-<option value="32">32</option>
-<option value="33">33</option>
-<option value="34">34</option>
-<option value="35">35</option>
-<option value="36">36</option>
-<option value="37">37</option>
-<option value="38">38</option>
-<option value="39">39</option>
-<option value="40">40</option>
-<option value="41">41</option>
-<option value="43">43</option>
-<option value="99">99</option>
-</select>
+<option value="01">Live animals/fish</option>
+<option value="02">Cereal grains</option>
+<option value="03">Other ag prods.</option>
+<option value="04">Animal feed</option>
+<option value="05">Meat/seafood</option>
+<option value="06">Milled grain prods.</option>
+<option value="07">Other foodstuffs</option>
+<option value="08">Alcoholic beverages</option>
+<option value="09">Tobacco prods.</option>
+<option value="10">Building stone</option>
+<option value="11">Natural sands</option>
+<option value="12">Gravel</option>
+<option value="13">Nonmetallic minerals</option>
+<option value="14">Metallic ores</option>
+<option value="15">Coal</option>
+<option value="16">Crude petroleum</option>
+<option value="18">Gasoline</option>
+<option value="19">Fuel oils</option>
+<option value="20">Basic chemicals</option>
+<option value="21">Pharmaceuticals</option>
+<option value="22">Fertilizers</option>
+<option value="23">Chemical prods.</option>
+<option value="24">Plastics/rubber</option>
+<option value="25">Logs</option>
+<option value="26">Wood prods.</option>
+<option value="27">Newsprint/paper</option>
+<option value="28">Paper articles</option>
+<option value="29">Printed prods.</option>
+<option value="30">Textiles/leather</option>
+<option value="31">Nonmetal min. prods.</option>
+<option value="32">Base metals</option>
+<option value="33">Articles-base metal</option>
+<option value="34">Machinery</option>
+<option value="35">Electronics</option>
+<option value="36">Motorized vehicles</option>
+<option value="37">Transport equip.</option>
+<option value="38">Precision instruments</option>
+<option value="39">Furniture</option>
+<option value="40">Misc. mfg. prods.</option>
+<option value="41">Waste/scrap</option>
+<option value="43">Mixed freight</option>
+<option value="99">Unknown</option></select>
 <br>
 Mode:
 <select id='mode_select'>
   <option value='00'>All Modes</option>
-  <option value="1">1</option>
-  <option value="2">2</option>
-  <option value="3">3</option>
-  <option value="5">5</option>
-  <option value="6">6</option>
-  <option value="7">7</option>
+  <option value="1">Truck</option>
+  <option value="2">Rail</option>
+  <option value="3">Water</option>
+  <option value="5">Air</option>
+  <option value="6">Pipeline</option>
+  <option value="7">Other/Unkown</option>
 </select>
 <br>
 Origin or Destination
@@ -189,6 +188,7 @@ queue()
   var url = 'data/get/getCountyToNation.php';
   $.ajax({url:url, type:'POST',data: { sctg:'00',mode:"00",orig_or_dest:'orig_fips',fips:27137 },dataType:'json',async:true})
     .done(function(data) { 
+      $('#heading_commidity').html($("#commodity_select").find(":selected").text());
       choropleth(data,27137);  
     })
     .fail(function(data) { console.log(data.responseText) });
@@ -201,10 +201,11 @@ queue()
       granularity = $("#granularity_select").val();
       orig_or_dest = $("#orig_or_dest").val();
       fips = $('#county_select').val();
-      $('#heading_commidity').html(commodity);
+      $('#heading_commidity').html($("#commodity_select").find(":selected").text());
       $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,orig_or_dest:orig_or_dest,fips:fips},dataType:'json',async:true})
         .done(function(data) { 
-          choropleth(data,fips);  
+          choropleth(data,fips);
+
         })
         .fail(function(data) { console.log(data.responseText) });
     })
