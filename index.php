@@ -42,7 +42,7 @@
 <h1><a href='chord_chart.php'>Chord Chart</a>
 </p> -->
 <p>
-<a href='symbol_map.php'>Symbol Map</a>
+<h1><a href='symbol_map.php'>Symbol Map</a>
 </p>
 <a href='choropleth.php'>Choropleth Map</a>
 </p>
