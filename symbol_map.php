@@ -123,7 +123,7 @@ Mode:
   <option value="3">Water</option>
   <option value="5">Air</option>
   <option value="6">Pipeline</option>
-  <option value="7">Other/Unkown</option>
+  <option value="7">Other/Unkown</option>git 
 </select> <br>
 Origin or Destination
 <select id ='orig_or_dest'>
