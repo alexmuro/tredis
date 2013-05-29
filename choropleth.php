@@ -59,7 +59,7 @@
   <aside>May 16, 2013</aside>
 </header>
 <body>
-<h1><span id="heading_county">MN County</span> Flows <span id='heading_commidity'>03</span></h1>
+<h1><span id="heading_county"></span> <span id='heading_commidity'>03</span> Flow Map</h1>
 
 <aside style="margin-top:300px;"> 
 <p>
