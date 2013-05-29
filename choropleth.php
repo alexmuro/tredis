@@ -125,7 +125,7 @@ Mode:
 <br>
 Origin or Destination
 <select id ='orig_or_dest'>
-  <option value="orig_fips">Export Flows</option>
+  <option value="orig_fips" selected>Export Flows</option>
   <option value="dest_fips">Import Flows</option>
 </select>
 
@@ -169,13 +169,14 @@ data.forEach(function(d) {
   }
   ton_domain.push(d.tons);
 })
+max = ton_domain[0];
+if(max < 100){max = 100;}
 
-//console.log(ton_domain);
 
 var quantize = d3.scale.quantile()
-    .domain([0,ton_domain[0]])
+    .domain([0,max])
     .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
-console.log(quantize.quantiles());
+
 
 var path = d3.geo.path();
 
@@ -185,16 +186,11 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-
-
 queue()
     .defer(d3.json, "data/us-counties.json")
     .await(ready);
 
-
-
   function ready(error, us) {
-    //console.log(error);
     svg.append("g")
       .attr("class", "counties")
     .selectAll("path")
@@ -250,7 +246,7 @@ queue()
     $('#county_data').append('Water : '+number_format((1*data['dest_fips']['water_total']).toFixed(2))+' tons<br>');
     $('#county_data').append('Pipeline : '+number_format((1*data['dest_fips']['pipeline_total']).toFixed(2))+' tons<br>');
     $('#county_data').append('Other/Unkown : '+number_format((1*data['dest_fips']['other_total']).toFixed(2))+' tons<br>');
-    console.log(data);
+    
   }
 
   function drawTable(data){
@@ -265,7 +261,7 @@ queue()
   }
 
   var url = 'data/get/getCountyToNation.php';
-  $.ajax({url:url, type:'POST',data: { sctg:'00',mode:"00",orig_or_dest:'orig_fips',fips:27137 },dataType:'json',async:true})
+  $.ajax({url:url, type:'POST',data: { sctg:'00',mode:"00",orig_or_dest:'dest_fips',fips:27137 },dataType:'json',async:true})
     .done(function(data) { 
       $('#heading_commidity').html($("#commodity_select").find(":selected").text());
       choropleth(data['map'],27137);
@@ -286,7 +282,8 @@ queue()
       $.ajax({url:url, type:'POST',data: { sctg:commodity,mode:mode,orig_or_dest:orig_or_dest,fips:fips},dataType:'json',async:true})
         .done(function(data) { 
           choropleth(data['map'],fips);
-          drawTable(data['map']);    
+          drawTable(data['map']);
+          drawFlowTable(data['flow']);    
         })
         .fail(function(data) { console.log(data.responseText) });
     })
