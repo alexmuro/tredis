@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>AVAIL</title>
@@ -126,8 +125,8 @@ Mode:
 <br>
 Origin or Destination
 <select id ='orig_or_dest'>
-  <option value="orig_fips">Outgoing Flows</option>
-  <option value="dest_fips">Incoming Flows</option>
+  <option value="orig_fips">Export Flows</option>
+  <option value="dest_fips">Import Flows</option>
 </select>
 
 
@@ -235,8 +234,23 @@ queue()
   });
 
   function drawFlowTable(data){
-    $('#County_data').html('<h3>'+$("#county_select").find(":selected").text()+'<br> Totals</h3>');
-          
+    $('#county_data').html('<h3>'+$("#county_select").find(":selected").text()+' Totals<br>by Mode </h3>');
+    $('#county_data').append('<strong>Export Flows</strong><br>');
+    $('#county_data').append('All Modes : '+number_format((1*data['orig_fips']['total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Truck : '+number_format((1*data['orig_fips']['truck_total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Rail : '+number_format((1*data['orig_fips']['rail_total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Water : '+number_format((1*data['orig_fips']['water_total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Pipeline : '+number_format((1*data['orig_fips']['pipeline_total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Other/Unkown : '+number_format((1*data['orig_fips']['other_total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('<br>');
+    $('#county_data').append('<strong>Import Flows</strong><br>');
+    $('#county_data').append('All Modes : '+number_format((1*data['dest_fips']['total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Truck : '+number_format((1*data['dest_fips']['truck_total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Rail : '+number_format((1*data['dest_fips']['rail_total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Water : '+number_format((1*data['dest_fips']['water_total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Pipeline : '+number_format((1*data['dest_fips']['pipeline_total']).toFixed(2))+' tons<br>');
+    $('#county_data').append('Other/Unkown : '+number_format((1*data['dest_fips']['other_total']).toFixed(2))+' tons<br>');
+    console.log(data);
   }
 
   function drawTable(data){
@@ -256,7 +270,7 @@ queue()
       $('#heading_commidity').html($("#commodity_select").find(":selected").text());
       choropleth(data['map'],27137);
       drawTable(data['map']); 
-      
+      drawFlowTable(data['flow'])
     })
     .fail(function(data) { console.log(data.responseText) });
   
@@ -277,6 +291,9 @@ queue()
         .fail(function(data) { console.log(data.responseText) });
     })
   })
+  function number_format(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 </script>
 
 
