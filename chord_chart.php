@@ -27,7 +27,7 @@ path.chord {
 </style>
 
 <header>
-  <a href="availabs.org" rel="author">AVAIL Labs Tredis Demo</a>
+  <a href="/vis/tredis/" rel="author">AVAIL Labs Tredis Demo</a>
   <aside>May 9, 2013</aside>
 </header>
 
