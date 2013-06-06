@@ -33,7 +33,7 @@
 </style>
 
 <header>
-  <a href="availabs.org" rel="author">AVAIL Labs Tredis Demo</a>
+  <a href="#" rel="author">AVAIL Labs Tredis Demo</a>
   <aside>May 16, 2013</aside>
 </header>
 
