@@ -55,7 +55,7 @@
 </style>
 
 <header>
-  <a href="availabs.org" rel="author">AVAIL Labs Tredis Demo</a>
+  <a href="/tredis/" rel="author">AVAIL Labs Tredis Demo</a>
   <aside>May 16, 2013</aside>
 </header>
 <body>
@@ -174,7 +174,7 @@ if(max < 100){max = 100;}
 
 
 var quantize = d3.scale.quantile()
-    .domain([0,max])
+    .domain([0,(max*3)])
     .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
 
 

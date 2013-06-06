@@ -38,9 +38,9 @@
 </header>
 
 <h1>Minnesota Trade Data Visualizations</h1>
-<!-- <p>
+<p>
 <h1><a href='chord_chart.php'>Chord Chart</a>
-</p> -->
+</p>
 <p>
 <h1><a href='symbol_map.php'>Symbol Map</a>
 </p>

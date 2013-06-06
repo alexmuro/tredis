@@ -58,9 +58,11 @@ circle {
 
 </style>
 
-<header>
+ <header>
+  <a href="/tredis/" rel="author">AVAIL Labs Tredis Demo</a>
   <aside>May 16, 2013</aside>
 </header>
+
 
 <h1>MN County Flows <span id='heading_commidity'>03</span></h1>
 
@@ -261,7 +263,7 @@ function symbol_graph(map,flow_data,orig_or_dest)
         var origin = flow.orig,
         destination = flow.dest,
         links = linksByOrigin[origin] || (linksByOrigin[origin] = []);
-        links.push({source: origin, target: destination});
+        links.push({source: origin, target: destination, tons:flow.tons});
         countByOrig[origin] = (countByOrig[origin] || 0) + flow.tons*1;
         countByDest[destination] = (countByDest[destination] || 0) + flow.tons*1;
       }
@@ -277,7 +279,15 @@ function symbol_graph(map,flow_data,orig_or_dest)
   g.append("svg:path")
     .attr("class", "cell")
     .attr("d", function(d, i) { return "M" + polygons[i].join("L") + "Z"; })
-    .on("mouseover", function(d, i) { d3.select("h2 span").text(d.name); });
+    .on("mouseover", function(d, i) { 
+        d3.select("h2 span").html(d.name);
+        display = [];
+        $.each(linksByOrigin[d.id],function(d,v){
+          display.push([v.target,v.tons*1]);
+        });
+        display.sort(sortMultiDimensional);
+        console.log(display);
+    });
 
   g.selectAll("path.arc")
     .data(function(d) { 
@@ -337,6 +347,11 @@ $(function(){
         .fail(function(data) { console.log(data.responseText) });
     })
   })
-
+  
+  function sortMultiDimensional(a,b)
+  {
+    // for instance, this will sort the array using the second element    
+    return ((a[1] < b[1]) ? -1 : ((a[1] > b[1]) ? 1 : 0));
+  }
 
 </script>
