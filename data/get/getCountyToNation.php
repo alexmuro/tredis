@@ -44,6 +44,18 @@
 		$csv[] = $csvrow;
 
 	}
-
-	echo json_encode($csv);
+	$flow = array();
+	$sql = "select * from counties_orig_fips where orig_fips = $fips";
+	$rs=mysql_query($sql) or die($sql." ".mysql_error());
+	$row = mysql_fetch_assoc( $rs );
+	$flow['orig_fips'] = $row;
+	$sql = "select * from counties_dest_fips where orig_fips = $fips";
+	$rs=mysql_query($sql) or die($sql." ".mysql_error());
+	$row = mysql_fetch_assoc( $rs );
+	$flow['dest_fips'] = $row;
+	
+	$output = array();
+	$output['flow'] = $flow;
+	$output['map'] = $csv; 
+	echo json_encode($output);
 ?>
