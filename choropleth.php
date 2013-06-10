@@ -149,7 +149,11 @@ Origin or Destination
 <script src="resources/js/queue.v1.min.js"></script>
 <script src="resources/js/topojson.v1.min.js"></script>
 
+
 <script>
+var  county_names = [];
+d3.json('data/us-county-names.json', function(error, counties){
+    county_names = counties;
 
 
 function choropleth(data,fips){
@@ -187,7 +191,7 @@ var svg = d3.select("body").append("svg")
     .attr("height", height);
 
 queue()
-    .defer(d3.json, "data/us-counties.json")
+    .defer(d3.json, "data/us-counties.back.json")
     .await(ready);
 
   function ready(error, us) {
@@ -197,10 +201,8 @@ queue()
       .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
       .attr("class", function(d) { if(d.id == fips){ return 'selected';}else{return quantize(rateById.get(d.id))+' county' || 'none';} })
-      //.attr("tons",function(d){ return (rateById.get(d.id)*1000).toFixed(2); })
-      //.attr("fips",function(d){ return d.id; })
       .attr("d", path)
-      .on("mouseover", function(d) { d3.select("#hover").html('County: '+d.id+'<br>Tons: '+(rateById.get(d.id)/1000).toFixed(2)); });
+      .on("mouseover", function(d) { d3.select("#hover").html('County: '+countName(d.id)+'<br>Tons: '+(rateById.get(d.id)/1000).toFixed(2)); });
 
     svg.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
@@ -217,6 +219,8 @@ queue()
   //   })
   //   .fail(function(data) { console.log(data.responseText) });
   // }
+
+
 
   d3.json('MN_Counties.topojson', function(error, oh) {
     var counties = topojson.feature(oh, oh.objects.counties);
@@ -250,17 +254,20 @@ queue()
   }
 
   function drawTable(data){
-    $('#data').html('<h3>Top Trade Destinations<br> by Mode &amp; Commodity</h3>');
-          $('#data').append("<table><thead><tr><td>Rank</td><td>County</td><td>Tons</td></tr></thead>");
+    var table = '<h3>Top Trade Destinations<br> by Mode &amp; Commodity</h3>';
+          table  = "<table><thead><tr><td>Rank</td><td>County</td><td>Tons</td></tr></thead>";
           $.each(data,function(d,v){
             if(d <20){
-              $('#data').append("<tr><td>"+(d*1+1)+"&nbsp;&nbsp;</td><td>"+v.orig+"&nbsp;&nbsp;</td><td> "+(v.tons*1).toFixed(2)+"</td></tr>");
+              //console.log(d,v);
+              table += "<tr><td>"+(d*1+1)+"&nbsp;&nbsp;</td><td>"+countName(v.orig*1)+"&nbsp;&nbsp;</td><td> "+(v.tons*1).toFixed(2)+"</td></tr>";
             }
           });
-          $('#data').append("</table>");
+          table += "</table>";
+          $('#data').html(table);
   }
 
   var url = 'data/get/getCountyToNation.php';
+
   $.ajax({url:url, type:'POST',data: { sctg:'00',mode:"00",orig_or_dest:'dest_fips',fips:27137 },dataType:'json',async:true})
     .done(function(data) { 
       $('#heading_commidity').html($("#commodity_select").find(":selected").text());
@@ -291,6 +298,35 @@ queue()
   function number_format(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
+function countName(inputId){
+  name = '';
+  county_names.forEach(function(d){
+    if (inputId == d.fips){
+      name = d.name;       
+       //console.log(d.fips, d.name);
+    }   
+  });
+ return name;
+}
+
+});
+
+// function createCSV(){
+
+// d3.json('data/us-counties.json', function(error, oh) {
+//    counties_csv = [];
+//     var counties = topojson.feature(oh, oh.objects.counties);
+//      counties.features.forEach(function(d){
+//       row = {};
+//       row['fips'] = d.id;
+//       row['name'] = d.properties.name;
+//       //console.log(row);
+//       counties_csv.push(row);
+//     });
+//   console.log(JSON.stringify(counties_csv));
+//   });
+  
+// }
 </script>
 
 
